@@ -194,10 +194,11 @@ const cats = DATA.categories;
   document.getElementById("nsample").textContent = total+" 个型号 / "+cats.length+" 个品类";
   const byB = [...cats].sort((a,b)=>a.fit.b-b.fit.b);
   const steep = byB[0], flat = byB[byB.length-1];
+  const knee = steep.knee["0.8"], top = Math.max(...steep.items.map(i=>i.price));
   const stats = [
     {v:steep.fit.double.toFixed(2)+"<small>×</small>", k:steep.label+"：价格翻倍，性能只涨这么多"},
-    {v:cats.length+"<small>类</small>", k:"覆盖 PC 核心件 / 手机 / 外设"},
-    {v:total+"<small>款</small>", k:"2026-11 在售型号样本"},
+    {v:money(knee.real_price||0), k:steep.label+" 拿到 80% 性能的价格（旗舰 "+money(top)+"）"},
+    {v:total+"<small>款</small>", k:"2026-11 在售型号样本 · "+cats.length+" 个品类"},
     {v:"b="+steep.fit.b.toFixed(2), k:steep.label+" 的边际递减指数（最小）"},
   ];
   document.getElementById("stats").innerHTML = stats.map(s=>
@@ -405,6 +406,8 @@ function drawCross(){
 function drawCards(){
   document.getElementById("cards").innerHTML = cats.map(c=>{
     const best=[...c.items].sort((a,b)=>b.perf/b.price-a.perf/a.price)[0];
+    const flag=[...c.items].sort((a,b)=>b.price-a.price)[0];
+    const ratio=Math.round((flag.perf/flag.price)/(best.perf/best.price)*100);
     const k=c.knee["0.8"];
     return `<div class="card">
       <h4><span style="display:flex;align-items:center;gap:7px"><i style="width:8px;height:8px;border-radius:2px;background:${COLORS[c.category]};display:inline-block"></i>${c.label}</span>
@@ -414,7 +417,7 @@ function drawCards(){
         <dt>80% 性能价</dt><dd>${k&&k.real_price?money(k.real_price):"—"}</dd>
         <dt>最香型号</dt><dd style="font-family:inherit;font-size:11px">${best.name.slice(0,18)}</dd>
         <dt>最香每元</dt><dd>${(best.perf/best.price*1000).toFixed(0)}</dd>
-        <dt>高端溢价起点</dt><dd>${money(c.items.reduce((m,i)=>Math.max(m,i.price),0)*0.75)}</dd>
+        <dt>旗舰每元只剩</dt><dd>${ratio}%</dd>
       </dl></div>`;
   }).join("");
 }
