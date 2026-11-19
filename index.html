@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>设备的边际收益曲线 · 2026 年 11 月价格-性能图鉴</title>
+<style>
+:root{
+  --bg:#0a0c11; --panel:#11141c; --panel2:#161a24; --line:rgba(255,255,255,.08);
+  --txt:#e8eaf0; --mut:#8b93a7; --dim:#5d6478;
+  --acc:#5eead4; --acc2:#f59e0b; --acc3:#a78bfa; --red:#f87171;
+  --mono:ui-monospace,"SF Mono","Cascadia Mono",Consolas,"Roboto Mono",monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
+  font-family:system-ui,-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  -webkit-font-smoothing:antialiased}
+body{padding:0 0 80px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+a{color:var(--acc)}
+header{padding:56px 0 28px;border-bottom:1px solid var(--line);
+  background:radial-gradient(900px 380px at 15% -10%,rgba(94,234,212,.10),transparent 60%),
+             radial-gradient(700px 300px at 85% 0%,rgba(167,139,250,.09),transparent 60%)}
+.kicker{font:600 12px/1 var(--mono);letter-spacing:.18em;color:var(--acc);text-transform:uppercase;margin-bottom:16px}
+h1{margin:0 0 14px;font-size:clamp(28px,4.4vw,46px);line-height:1.14;letter-spacing:-.02em;font-weight:800}
+h1 em{font-style:normal;color:var(--acc)}
+.lede{color:var(--mut);font-size:16px;line-height:1.72;max-width:76ch;margin:0}
+.lede b{color:var(--txt);font-weight:600}
+.meta{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:22px;font:12px/1.6 var(--mono);color:var(--dim)}
+.meta span b{color:var(--mut);font-weight:500}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:14px;overflow:hidden;margin:34px 0 8px}
+.stat{background:var(--panel);padding:18px 18px 16px}
+.stat .v{font:700 26px/1.1 var(--mono);letter-spacing:-.02em}
+.stat .v small{font-size:13px;color:var(--mut);font-weight:500;margin-left:2px}
+.stat .k{font-size:11.5px;color:var(--dim);margin-top:8px;letter-spacing:.04em}
+
+section{margin-top:52px}
+h2{font-size:20px;margin:0 0 6px;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+h2 .n{font:600 11px/1 var(--mono);color:var(--acc);border:1px solid rgba(94,234,212,.35);
+  border-radius:6px;padding:4px 6px}
+.sub{color:var(--mut);font-size:13.5px;line-height:1.7;margin:0 0 18px;max-width:82ch}
+
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 14px}
+.tab{appearance:none;border:1px solid var(--line);background:var(--panel);color:var(--mut);
+  font:500 13.5px/1 inherit;padding:9px 14px;border-radius:999px;cursor:pointer;transition:.16s}
+.tab:hover{color:var(--txt);border-color:rgba(255,255,255,.2)}
+.tab[aria-selected=true]{background:rgba(94,234,212,.12);border-color:rgba(94,234,212,.5);color:var(--acc)}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 16px 8px;position:relative}
+.panel .hd{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:2px 4px 10px}
+.panel .hd h3{margin:0;font-size:14.5px;font-weight:600}
+.panel .hd p{margin:3px 0 0;font-size:12px;color:var(--dim);line-height:1.5}
+.ctrls{display:flex;gap:6px;flex-shrink:0}
+.ctrl{appearance:none;background:var(--panel2);border:1px solid var(--line);color:var(--mut);
+  font:500 11.5px/1 var(--mono);padding:7px 9px;border-radius:7px;cursor:pointer}
+.ctrl[aria-pressed=true]{color:var(--acc);border-color:rgba(94,234,212,.45)}
+svg{display:block;width:100%;height:auto;overflow:visible}
+.tip{position:fixed;pointer-events:none;z-index:50;background:#0d1017;border:1px solid rgba(255,255,255,.16);
+  border-radius:10px;padding:10px 12px;font-size:12px;line-height:1.55;box-shadow:0 12px 40px rgba(0,0,0,.6);
+  opacity:0;transition:opacity .1s;max-width:260px}
+.tip b{font:600 13px/1.4 inherit}
+.tip .row{display:flex;justify-content:space-between;gap:18px;color:var(--mut);font-family:var(--mono);font-size:11.5px}
+.tip .row span:last-child{color:var(--txt)}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:860px){.grid2{grid-template-columns:1fr}}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 15px}
+.card h4{margin:0 0 10px;font-size:13.5px;display:flex;justify-content:space-between;align-items:center}
+.card h4 .b{font:600 11px/1 var(--mono);color:var(--acc2);background:rgba(245,158,11,.1);
+  border:1px solid rgba(245,158,11,.3);padding:4px 6px;border-radius:5px}
+.card dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:5px 10px;font-size:12px}
+.card dt{color:var(--dim);white-space:nowrap}
+.card dd{margin:0;text-align:right;font-family:var(--mono);font-size:11.5px}
+
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th,td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--dim);font-weight:500;font-size:11px;letter-spacing:.04em;text-align:right;cursor:pointer;user-select:none}
+th:first-child,td:first-child{text-align:left}
+tbody tr:hover{background:rgba(255,255,255,.03)}
+td.mono,th.mono{font-family:var(--mono)}
+.badge{display:inline-block;font:500 10.5px/1 var(--mono);padding:3px 5px;border-radius:4px;
+  background:rgba(94,234,212,.1);color:var(--acc);border:1px solid rgba(94,234,212,.25)}
+.badge.warn{background:rgba(248,113,113,.1);color:var(--red);border-color:rgba(248,113,113,.25)}
+
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.note{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.note h4{margin:0 0 6px;font-size:13px}
+.note p{margin:0;font-size:12.5px;color:var(--mut);line-height:1.7}
+footer{margin-top:56px;padding-top:22px;border-top:1px solid var(--line);color:var(--dim);font-size:12px;line-height:1.8}
+footer a{color:var(--mut)}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="kicker">Price · Performance · Diminishing Returns</div>
+    <h1>设备的边际收益曲线：<br>钱花到哪一档，<em>才开始不值</em></h1>
+    <p class="lede" id="lede">把 CPU、显卡、内存、SSD、手机、显示器放在同一套「价格 vs 性能」坐标里，
+      用幂律 <b>P = a·X<sup>b</sup></b> 拟合。<b>b &lt; 1</b> 就是边际收益递减：价格翻倍，性能涨不到一倍。</p>
+    <div class="meta">
+      <span>数据日期 <b>2026-11-20</b></span>
+      <span>价格口径 <b>中国大陆 · 全新 · ZOL 参考价/京东价</b></span>
+      <span>跑分口径 <b>PassMark / AnTuTu / 规格推算</b></span>
+      <span>样本 <b id="nsample">—</b></span>
+    </div>
+    <div class="stats" id="stats"></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section>
+    <h2><span class="n">01</span>主曲线：每多花一块钱，能买到多少性能</h2>
+    <p class="sub">横轴为价格（对数刻度），纵轴为性能（可切换原始值 / 品类内归一化 0–100）。虚线是幂律拟合，
+      竖线是「拿到该品类 80% 性能所需的最低价格」——这条线左边是甜点区，右边每一档都在为最后 20% 付溢价。</p>
+    <div class="tabs" id="tabs" role="tablist"></div>
+    <div class="panel">
+      <div class="hd">
+        <div><h3 id="chartTitle">—</h3><p id="chartSub">—</p></div>
+        <div class="ctrls">
+          <button class="ctrl" id="btnScale" aria-pressed="false">归一化 0–100</button>
+          <button class="ctrl" id="btnFit" aria-pressed="true">拟合线</button>
+        </div>
+      </div>
+      <svg id="main" viewBox="0 0 900 460" role="img" aria-label="价格性能散点图"></svg>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">02</span>边际收益：从入门款出发，每 ¥1000 买到多少性能点</h2>
+    <p class="sub">以该品类最便宜型号为起点，计算 <span style="font-family:var(--mono)">(P − P₀) / (X − X₀) × 1000</span>。
+      曲线一路下滑就是「边际收益递减」的直接证据；尾巴贴地意味着再加钱几乎买不到性能。</p>
+    <div class="grid2">
+      <div class="panel"><div class="hd"><div><h3 id="mgTitle">—</h3><p>每 ¥1000 换来的性能点（归一化）</p></div></div>
+        <svg id="marg" viewBox="0 0 460 300" role="img" aria-label="边际收益图"></svg></div>
+      <div class="panel"><div class="hd"><div><h3>价格翻倍，性能涨几倍？</h3><p>2^b：b 越小，越「加钱买不到性能」</p></div></div>
+        <svg id="bars" viewBox="0 0 460 300" role="img" aria-label="弹性系数条形图"></svg></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">03</span>跨品类：谁的曲线更「早熟」</h2>
+    <p class="sub">把所有品类归一到同一把尺子（各自最高分 = 100），看谁在更低的价格就摸到 80 分。
+      注意：不同品类的性能分不可直接比，这里只比曲线形状与「达到 80 分所需价格」。</p>
+    <div class="panel"><div class="hd"><div><h3>归一化性能 vs 价格</h3><p>细点为真实型号，粗线为各品类幂律拟合</p></div></div>
+      <svg id="cross" viewBox="0 0 900 420" role="img" aria-label="跨品类对比图"></svg></div>
+  </section>
+
+  <section>
+    <h2><span class="n">04</span>各品类体检卡</h2>
+    <p class="sub">b = 幂律指数；2^b = 价格翻倍时的性能倍数；80% 价 = 拿到 80% 性能的最低实际型号价格；最香型号 = 每元性能最高。</p>
+    <div class="cards" id="cards"></div>
+  </section>
+
+  <section>
+    <h2><span class="n">05</span>全部型号明细</h2>
+    <p class="sub">点击表头排序。每元性能 = 性能 / 价格 × 1000，用来横向找「同价位最强」。</p>
+    <div class="panel" style="padding:6px 10px 14px;overflow-x:auto">
+      <table id="table"><thead></thead><tbody></tbody></table>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">06</span>方法与边界</h2>
+    <div class="notes">
+      <div class="note"><h4>幂律拟合</h4><p>对 ln(价格) 与 ln(性能) 做最小二乘。b&lt;1 即边际递减；R² 低说明该品类价格与性能的关系被品牌溢价、缺货、规格差异打散。</p></div>
+      <div class="note"><h4>价格口径</h4><p>2026 年 11 月中国大陆全新价，取 ZOL 参考价与京东自营价的可用值。2026 年 DRAM/NAND 涨价周期内，内存与 SSD 的价格波动远大于往年。</p></div>
+      <div class="note"><h4>性能口径</h4><p>CPU/GPU 用 PassMark，手机用安兔兔，显示器用像素吞吐，内存用带宽×容量，SSD 用顺序读取。指标不同，不可跨品类比绝对值。</p></div>
+      <div class="note"><h4>没算进去的东西</h4><p>品牌溢价、售后、功耗、噪音、体积、生态（CUDA/苹果生态）、二手残值。这些都是「性能/元」之外的真实效用。</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <p>数据采集：2026-11-20 ｜ 价格来源：ZOL 中关村在线产品库、京东自营 ｜ 跑分来源：PassMark、AnTuTu ｜ 生成：单文件离线 HTML，无外部依赖。</p>
+    <p id="footNote"></p>
+  </footer>
+</main>
+
+<div class="tip" id="tip"></div>
+<script>
+const DATA = {"generated":"2026-11-20","categories":[{"category":"cpu","label":"桌面 CPU","metric":{"name":"PassMark CPU Mark（多核）","unit":"分","higher_is_better":true},"price_basis":"中国大陆 全新 参考价/京东价（CNY），2026-11","caveats":["跑分为 PassMark 公开均分，随版本/散热/内存频率有 ±5% 波动","价格为 2026-11 ZOL 参考价与京东自营价的混合，散片/盒装差异大，AMD 散片可再低 10-15%"],"items":[{"name":"AMD Ryzen 5 5500","price":549,"perf":19246,"note":"","source":"https://www.cpubenchmark.net/multithread","norm":0.0,"per1000":35056.47},{"name":"AMD Ryzen 5 5600","price":769,"perf":21488,"note":"","source":"https://www.cpubenchmark.net/multithread","norm":4.4,"per1000":27942.78},{"name":"AMD Ryzen 5 5600X","price":949,"perf":21820,"note":"","source":"https://www.cpubenchmark.net/multithread","norm":5.1,"per1000":22992.62},{"name":"AMD Ryzen 7 5700X","price":999,"perf":26536,"note":"","source":"https://www.cpubenchmark.net/multithread","norm":14.3,"per1000":26562.56},{"name":"AMD Ryzen 5 7500F","price":779,"perf":26487,"note":"","source":"https://www.cpubenchmark.net/multithread","norm":14.2,"per1000":34001.28},{"name":"AMD Ryzen 5 7600","price":899,"perf":26964,"note":"","source":"https://www.cpubenchmark.net/multithread","norm":15.2,"per1000":29993.33},{"name":"Intel 酷睿 i5-12490F","price":979,"perf":20313,"note":"","source":"https://www.cpubenchmark.net/multithread","norm":2.1,"per1000":20748.72},{"name":"Intel 酷睿 i5-12600KF","price":1319,"perf":27500,"note":"","source":"https://www.cpubenchmark.net/multithread","norm":16.2,"per1000":20849.13},{"name":"Intel 酷睿 i5-14600KF","price":1619,"perf":38212,"note":"","source":"https://www.cpubenchmark.net/multithread","norm":37.3,"per1000":23602.22},{"name":"AMD Ryzen 5 9600X","price":1169,"perf":30007,"note":"","source":"https://www.cpubenchmark.net/multithread","norm":21.2,"per1000":25668.95},{"name":"Intel 酷睿 Ultra 5 245K","price":1469,"perf":42980,"note":"","source":"https://www.cpubenchmark.net/multithread","norm":46.7,"per1000":29258.0},{"name":"AMD Ryzen 7 7800X3D","price":2069,"perf":34280,"note":"","source":"https://www.cpubenchmark.net/multithread","norm":29.6,"per1000":16568.39},{"name":"AMD Ryzen 7 9700X","price":1989,"perf":36913,"note":"","source":"https://www.cpubenchmark.net/multithread","norm":34.7,"per1000":18558.57},{"name":"Intel 酷睿 Ultra 7 265K","price":1969,"perf":58568,"note":"","source":"https://www.cpubenchmark.net/multithread","norm":77.3,"per1000":29745.05},{"name":"AMD Ryzen 7 9800X3D","price":3299,"perf":39911,"note":"","source":"https://www.cpubenchmark.net/multithread","norm":40.6,"per1000":12097.91},{"name":"AMD Ryzen 9 7900X","price":2499,"perf":51204,"note":"","source":"https://www.cpubenchmark.net/multithread","norm":62.8,"per1000":20489.8},{"name":"AMD Ryzen 9 9900X","price":2799,"perf":54274,"note":"","source":"https://www.cpubenchmark.net/multithread","norm":68.9,"per1000":19390.5},{"name":"Intel 酷睿 i7-14700K","price":3049,"perf":51885,"note":"","source":"https://www.cpubenchmark.net/multithread","norm":64.2,"per1000":17017.05},{"name":"Intel 酷睿 i9-14900K","price":3569,"perf":58147,"note":"","source":"https://www.cpubenchmark.net/multithread","norm":76.5,"per1000":16292.24},{"name":"Intel 酷睿 Ultra 9 285K","price":4699,"perf":67229,"note":"","source":"https://www.cpubenchmark.net/multithread","norm":94.3,"per1000":14307.09},{"name":"AMD Ryzen 9 9950X","price":4299,"perf":65676,"note":"","source":"https://www.cpubenchmark.net/multithread","norm":91.3,"per1000":15277.04},{"name":"AMD Ryzen 9 9950X3D","price":5299,"perf":70108,"note":"","source":"https://www.cpubenchmark.net/multithread","norm":100.0,"per1000":13230.42}],"fit":{"b":0.595,"a":437.322,"r2":0.861,"n":22,"double":1.51},"knee":{"0.7":{"target":54849,"fit_price":3354,"real_price":1969,"real_model":"Intel 酷睿 Ultra 7 265K"},"0.8":{"target":59936,"fit_price":3893,"real_price":4299,"real_model":"AMD Ryzen 9 9950X"},"0.9":{"target":65022,"fit_price":4464,"real_price":4299,"real_model":"AMD Ryzen 9 9950X"}},"outliers":[{"name":"Intel 酷睿 i5-12490F","price":979,"z":-1.62},{"name":"Intel 酷睿 Ultra 5 245K","price":1469,"z":1.54},{"name":"Intel 酷睿 Ultra 7 265K","price":1969,"z":2.38},{"name":"AMD Ryzen 7 9800X3D","price":3299,"z":-1.92}],"best_per_yuan":[{"name":"AMD Ryzen 5 5500","price":549,"per1000":35056.47},{"name":"AMD Ryzen 5 7500F","price":779,"per1000":34001.28},{"name":"AMD Ryzen 5 7600","price":899,"per1000":29993.33}]},{"category":"gpu","label":"独立显卡","metric":{"name":"PassMark G3D Mark","unit":"分","higher_is_better":true},"price_basis":"中国大陆 全新 参考价/京东价（CNY），2026-11","caveats":["同芯片不同非公版价差可达 2000 元，这里取主流非公版价","G3D Mark 偏重 DX11/DX12 综合，光追性能差距未体现；RTX 5090 为国行现货价，溢价明显"],"items":[{"name":"NVIDIA RTX 4060 8G","price":2499,"perf":19478,"note":"","source":"https://www.videocardbenchmark.net/high_end_gpus.html","norm":0.0,"per1000":7794.32},{"name":"AMD RX 9060 XT 8G","price":2599,"perf":19717,"note":"","source":"https://www.videocardbenchmark.net/high_end_gpus.html","norm":1.2,"per1000":7586.38},{"name":"AMD RX 9060 XT 16G","price":2999,"perf":20149,"note":"","source":"https://www.videocardbenchmark.net/high_end_gpus.html","norm":3.4,"per1000":6718.57},{"name":"NVIDIA RTX 5060 8G","price":2899,"perf":20579,"note":"","source":"https://www.videocardbenchmark.net/high_end_gpus.html","norm":5.6,"per1000":7098.65},{"name":"NVIDIA RTX 5060 Ti 8G","price":3299,"perf":21771,"note":"","source":"https://www.videocardbenchmark.net/high_end_gpus.html","norm":11.7,"per1000":6599.27},{"name":"NVIDIA RTX 5060 Ti 16G","price":4099,"perf":22634,"note":"","source":"https://www.videocardbenchmark.net/high_end_gpus.html","norm":16.1,"per1000":5521.83},{"name":"AMD RX 9070 16G","price":4299,"perf":25373,"note":"","source":"https://www.videocardbenchmark.net/high_end_gpus.html","norm":30.1,"per1000":5902.07},{"name":"NVIDIA RTX 4070 12G","price":3999,"perf":26853,"note":"","source":"https://www.videocardbenchmark.net/high_end_gpus.html","norm":37.7,"per1000":6714.93},{"name":"AMD RX 9070 XT 16G","price":5399,"perf":26927,"note":"","source":"https://www.videocardbenchmark.net/high_end_gpus.html","norm":38.1,"per1000":4987.41},{"name":"NVIDIA RTX 5070 12G","price":4599,"perf":28684,"note":"","source":"https://www.videocardbenchmark.net/high_end_gpus.html","norm":47.1,"per1000":6237.01},{"name":"NVIDIA RTX 4070 Ti SUPER","price":6299,"perf":31847,"note":"","source":"https://www.videocardbenchmark.net/high_end_gpus.html","norm":63.2,"per1000":5055.88},{"name":"NVIDIA RTX 5070 Ti 16G","price":6299,"perf":32336,"note":"","source":"https://www.videocardbenchmark.net/high_end_gpus.html","norm":65.7,"per1000":5133.51},{"name":"NVIDIA RTX 5080 16G","price":8299,"perf":35653,"note":"","source":"https://www.videocardbenchmark.net/high_end_gpus.html","norm":82.7,"per1000":4296.06},{"name":"NVIDIA RTX 4090 24G","price":13999,"perf":38014,"note":"","source":"https://www.videocardbenchmark.net/high_end_gpus.html","norm":94.8,"per1000":2715.48},{"name":"NVIDIA RTX 5090 32G","price":24399,"perf":39037,"note":"","source":"https://www.videocardbenchmark.net/high_end_gpus.html","norm":100.0,"per1000":1599.94}],"fit":{"b":0.354,"a":1289.353,"r2":0.858,"n":15,"double":1.28},"knee":{"0.7":{"target":33169,"fit_price":9520,"real_price":8299,"real_model":"NVIDIA RTX 5080 16G"},"0.8":{"target":35125,"fit_price":11190,"real_price":8299,"real_model":"NVIDIA RTX 5080 16G"},"0.9":{"target":37081,"fit_price":13039,"real_price":13999,"real_model":"NVIDIA RTX 4090 24G"}},"outliers":[{"name":"NVIDIA RTX 5090 32G","price":24399,"z":-1.79}],"best_per_yuan":[{"name":"NVIDIA RTX 4060 8G","price":2499,"per1000":7794.32},{"name":"AMD RX 9060 XT 8G","price":2599,"per1000":7586.38},{"name":"NVIDIA RTX 5060 8G","price":2899,"per1000":7098.65}]},{"category":"ram","label":"DDR5 内存（台式机套装）","metric":{"name":"带宽 × 容量 (GB²/s)","unit":"GB²/s","higher_is_better":true},"price_basis":"中国大陆 全新 参考价/京东价（CNY），2026-11","caveats":["性能按 频率×8B/1000×容量 计算，未计入时序/颗粒差异（实际游戏帧数差异 <5%）","2026 年 DRAM 涨价周期，同规格价差极大；部分 ZOL 参考价滞后于京东实时价"],"items":[{"name":"金百达银爵 16GB(2×8GB) DDR5-6000","price":399,"perf":768,"note":"6000MT/s≈48GB/s","source":"https://detail.zol.com.cn/memory/","norm":1.9,"per1000":1924.81},{"name":"英睿达 16GB DDR5-5600","price":300,"perf":716,"note":"6000MT/s≈48GB/s","source":"https://detail.zol.com.cn/memory/","norm":0.0,"per1000":2386.67},{"name":"金士顿 FURY Beast 16GB DDR5-6000","price":979,"perf":768,"note":"6000MT/s≈48GB/s","source":"https://detail.zol.com.cn/memory/","norm":1.9,"per1000":784.47},{"name":"金百达银爵 32GB(2×16GB) DDR5-5600","price":899,"perf":1434,"note":"6000MT/s≈48GB/s","source":"https://detail.zol.com.cn/memory/","norm":26.0,"per1000":1595.11},{"name":"金百达银爵 32GB(2×16GB) DDR5-6000","price":1059,"perf":1536,"note":"6000MT/s≈48GB/s","source":"https://detail.zol.com.cn/memory/","norm":29.6,"per1000":1450.42},{"name":"光威龙武 32GB(2×16GB) DDR5-6400","price":679,"perf":1638,"note":"6000MT/s≈48GB/s","source":"https://detail.zol.com.cn/memory/","norm":33.3,"per1000":2412.37},{"name":"金士顿 FURY Beast 32GB DDR5-6000","price":759,"perf":1536,"note":"6000MT/s≈48GB/s","source":"https://detail.zol.com.cn/memory/","norm":29.6,"per1000":2023.72},{"name":"芝奇焰锋戟 32GB(2×16GB) DDR5-6000 C30","price":999,"perf":1536,"note":"6000MT/s≈48GB/s","source":"https://detail.zol.com.cn/memory/","norm":29.6,"per1000":1537.54},{"name":"金百达黑刃 64GB(2×32GB) DDR5-6800","price":779,"perf":3482,"note":"6000MT/s≈48GB/s","source":"https://detail.zol.com.cn/memory/","norm":100.0,"per1000":4469.83},{"name":"威刚 XPG 龙耀 D500G 32GB DDR5-6000","price":979,"perf":1536,"note":"6000MT/s≈48GB/s","source":"https://detail.zol.com.cn/memory/","norm":29.6,"per1000":1568.95},{"name":"佰维 DW100 48GB(2×24GB) DDR5-6000 C28","price":1189,"perf":2304,"note":"6000MT/s≈48GB/s","source":"https://detail.zol.com.cn/memory/","norm":57.4,"per1000":1937.76},{"name":"金百达银爵 64GB(2×32GB) DDR5-6000","price":2199,"perf":3072,"note":"6000MT/s≈48GB/s","source":"https://detail.zol.com.cn/memory/","norm":85.2,"per1000":1397.0},{"name":"金士顿 FURY Beast 64GB(2×32GB) DDR5-6000","price":1499,"perf":3072,"note":"6000MT/s≈48GB/s","source":"https://detail.zol.com.cn/memory/","norm":85.2,"per1000":2049.37},{"name":"芝奇皇家戟 32GB(2×16GB) DDR5-6000 EXPO","price":1399,"perf":1536,"note":"6000MT/s≈48GB/s","source":"https://detail.zol.com.cn/memory/","norm":29.6,"per1000":1097.93}],"fit":{"b":0.678,"a":15.706,"r2":0.466,"n":14,"double":1.6},"knee":{"0.7":{"target":2652,"fit_price":1926,"real_price":779,"real_model":"金百达黑刃 64GB(2×32GB) DDR5-6800"},"0.8":{"target":2929,"fit_price":2230,"real_price":779,"real_model":"金百达黑刃 64GB(2×32GB) DDR5-6800"},"0.9":{"target":3205,"fit_price":2547,"real_price":779,"real_model":"金百达黑刃 64GB(2×32GB) DDR5-6800"}},"outliers":[{"name":"金士顿 FURY Beast 16GB DDR5-6000","price":979,"z":-2.03},{"name":"金百达黑刃 64GB(2×32GB) DDR5-6800","price":779,"z":2.3}],"best_per_yuan":[{"name":"金百达黑刃 64GB(2×32GB) DDR5-6800","price":779,"per1000":4469.83},{"name":"光威龙武 32GB(2×16GB) DDR5-6400","price":679,"per1000":2412.37},{"name":"英睿达 16GB DDR5-5600","price":300,"per1000":2386.67}]},{"category":"ssd","label":"NVMe 固态硬盘（1TB）","metric":{"name":"顺序读取 MB/s","unit":"MB/s","higher_is_better":true},"price_basis":"中国大陆 全新 参考价/京东价（CNY），2026-11","caveats":["顺序读取是厂商标称峰值，实际持续写入/随机 4K 差异更大","SSD 价格 2026 年随 NAND 涨价上行，1TB 主流价位从 2025 年的 400 元档上移"],"items":[{"name":"梵想 S500 Pro 1TB","price":359,"perf":3500,"note":"1TB 版本","source":"https://detail.zol.com.cn/solid_state_drive/","norm":11.0,"per1000":9749.3},{"name":"致态 Ti600 1TB","price":339,"perf":6000,"note":"1TB 版本","source":"https://detail.zol.com.cn/solid_state_drive/","norm":30.7,"per1000":17699.12},{"name":"铠侠 RC20 1TB","price":399,"perf":2100,"note":"1TB 版本","source":"https://detail.zol.com.cn/solid_state_drive/","norm":0.0,"per1000":5263.16},{"name":"金士顿 NV3 1TB","price":429,"perf":6000,"note":"1TB 版本","source":"https://detail.zol.com.cn/solid_state_drive/","norm":30.7,"per1000":13986.01},{"name":"西数 SN7100 1TB","price":459,"perf":7250,"note":"1TB 版本","source":"https://detail.zol.com.cn/solid_state_drive/","norm":40.6,"per1000":15795.21},{"name":"金士顿 KC3000 1TB","price":489,"perf":7000,"note":"1TB 版本","source":"https://detail.zol.com.cn/solid_state_drive/","norm":38.6,"per1000":14314.93},{"name":"致态 TiPlus7100 1TB","price":499,"perf":7000,"note":"1TB 版本","source":"https://detail.zol.com.cn/solid_state_drive/","norm":38.6,"per1000":14028.06},{"name":"三星 990 PRO 1TB","price":799,"perf":7450,"note":"1TB 版本","source":"https://detail.zol.com.cn/solid_state_drive/","norm":42.1,"per1000":9324.16},{"name":"致态 TiPro9000 1TB","price":999,"perf":14000,"note":"1TB 版本","source":"https://detail.zol.com.cn/solid_state_drive/","norm":93.7,"per1000":14014.01},{"name":"三星 9100 PRO 1TB","price":1099,"perf":14800,"note":"1TB 版本","source":"https://detail.zol.com.cn/solid_state_drive/","norm":100.0,"per1000":13466.79},{"name":"铠侠 SE10 1TB","price":1329,"perf":7300,"note":"1TB 版本","source":"https://detail.zol.com.cn/solid_state_drive/","norm":40.9,"per1000":5492.85}],"fit":{"b":0.774,"a":47.694,"r2":0.471,"n":11,"double":1.71},"knee":{"0.7":{"target":10990,"fit_price":1126,"real_price":999,"real_model":"致态 TiPro9000 1TB"},"0.8":{"target":12260,"fit_price":1297,"real_price":999,"real_model":"致态 TiPro9000 1TB"},"0.9":{"target":13530,"fit_price":1473,"real_price":999,"real_model":"致态 TiPro9000 1TB"}},"outliers":[{"name":"铠侠 RC20 1TB","price":399,"z":-2.03}],"best_per_yuan":[{"name":"致态 Ti600 1TB","price":339,"per1000":17699.12},{"name":"西数 SN7100 1TB","price":459,"per1000":15795.21},{"name":"金士顿 KC3000 1TB","price":489,"per1000":14314.93}]},{"category":"phone","label":"智能手机（Android）","metric":{"name":"安兔兔 v11 总分","unit":"分","higher_is_better":true},"price_basis":"中国大陆 全新 参考价/京东价（CNY），2026-11","caveats":["安兔兔为安兔兔 APP 用户上传均分，2026-10 榜单口径；同一机型不同内存版本分数略有差异","iPhone 未纳入：iOS 端安兔兔口径与 Android 不可比（若混入会系统性高估苹果性价比）","标注 est 的分数为按 SoC 档位估算，价格取官方起步价"],"items":[{"name":"Redmi Note17 Pro 12+256","price":1599,"perf":1500000,"note":"估算：est","source":"https://www.antutu.com/ranking?type=1&level=1","norm":5.6,"per1000":938086.3},{"name":"荣耀X80 Pro Max 12+256","price":1999,"perf":1750000,"note":"估算：est","source":"https://www.antutu.com/ranking?type=1&level=1","norm":12.6,"per1000":875437.72},{"name":"Redmi Turbo 4 Pro 12+256","price":1999,"perf":2383756,"note":"","source":"https://www.antutu.com/ranking?type=1&level=1","norm":30.4,"per1000":1192474.24},{"name":"一加Ace 6T 12+256","price":2599,"perf":2996754,"note":"","source":"https://www.antutu.com/ranking?type=1&level=1","norm":47.6,"per1000":1153041.17},{"name":"一加Ace 6 12+256","price":2599,"perf":3326131,"note":"","source":"https://www.antutu.com/ranking?type=1&level=1","norm":56.8,"per1000":1279773.37},{"name":"荣耀Power2 12+256","price":2699,"perf":2200000,"note":"估算：est","source":"https://www.antutu.com/ranking?type=1&level=1","norm":25.2,"per1000":815116.71},{"name":"一加Ace 5 至尊版 12+256","price":2599,"perf":2939354,"note":"","source":"https://www.antutu.com/ranking?type=1&level=1","norm":46.0,"per1000":1130955.75},{"name":"vivo Y600 Pro 12+256","price":1999,"perf":1300000,"note":"估算：est","source":"https://www.antutu.com/ranking?type=1&level=1","norm":0.0,"per1000":650325.16},{"name":"Redmi K100 12+256","price":3299,"perf":3277403,"note":"","source":"https://www.antutu.com/ranking?type=1&level=1","norm":55.5,"per1000":993453.47},{"name":"荣耀500 Pro 12+256","price":3599,"perf":2500000,"note":"估算：est","source":"https://www.antutu.com/ranking?type=1&level=1","norm":33.7,"per1000":694637.4},{"name":"Redmi K100 Pro 12+256","price":3699,"perf":3267280,"note":"","source":"https://www.antutu.com/ranking?type=1&level=1","norm":55.2,"per1000":883287.37},{"name":"iQOO Neo12 12+256","price":4199,"perf":4207139,"note":"","source":"https://www.antutu.com/ranking?type=1&level=1","norm":81.5,"per1000":1001938.32},{"name":"Redmi K100 Pro Max 16+512","price":4199,"perf":3753445,"note":"","source":"https://www.antutu.com/ranking?type=1&level=1","norm":68.8,"per1000":893890.21},{"name":"荣耀WIN RT2 16+512","price":4499,"perf":4286132,"note":"","source":"https://www.antutu.com/ranking?type=1&level=1","norm":83.7,"per1000":952685.49},{"name":"一加Ace 7 Pro 12+256","price":4799,"perf":4164057,"note":"","source":"https://www.antutu.com/ranking?type=1&level=1","norm":80.3,"per1000":867692.64},{"name":"OPPO Find X9 Pro 12+256","price":4699,"perf":3465093,"note":"","source":"https://www.antutu.com/ranking?type=1&level=1","norm":60.7,"per1000":737410.73},{"name":"荣耀Magic9 Pro Max 12+256","price":6499,"perf":4544330,"note":"","source":"https://www.antutu.com/ranking?type=1&level=1","norm":91.0,"per1000":699235.27},{"name":"iQOO 16 16+512","price":4999,"perf":4865546,"note":"估算：est","source":"https://www.antutu.com/ranking?type=1&level=1","norm":100.0,"per1000":973303.86},{"name":"小米17 Pro Max 16+512","price":5999,"perf":3164541,"note":"","source":"https://www.antutu.com/ranking?type=1&level=1","norm":52.3,"per1000":527511.42},{"name":"一加16 16+512","price":5999,"perf":4721800,"note":"","source":"https://www.antutu.com/ranking?type=1&level=1","norm":96.0,"per1000":787097.85},{"name":"vivo X500 Pro Max 12+256","price":6999,"perf":4354880,"note":"","source":"https://www.antutu.com/ranking?type=1&level=1","norm":85.7,"per1000":622214.6},{"name":"小米18 Pro Max 12+256","price":6999,"perf":4248508,"note":"","source":"https://www.antutu.com/ranking?type=1&level=1","norm":82.7,"per1000":607016.43},{"name":"OPPO Find X10 Pro Max 12+256","price":7499,"perf":4335762,"note":"","source":"https://www.antutu.com/ranking?type=1&level=1","norm":85.1,"per1000":578178.69}],"fit":{"b":0.682,"a":11487.329,"r2":0.722,"n":23,"double":1.6},"knee":{"0.7":{"target":3795882,"fit_price":4910,"real_price":4199,"real_model":"iQOO Neo12 12+256"},"0.8":{"target":4152437,"fit_price":5600,"real_price":4199,"real_model":"iQOO Neo12 12+256"},"0.9":{"target":4508991,"fit_price":6319,"real_price":4999,"real_model":"iQOO 16 16+512"}},"outliers":[{"name":"一加Ace 6 12+256","price":2599,"z":1.51},{"name":"vivo Y600 Pro 12+256","price":1999,"z":-2.29},{"name":"小米17 Pro Max 16+512","price":5999,"z":-1.59}],"best_per_yuan":[{"name":"一加Ace 6 12+256","price":2599,"per1000":1279773.37},{"name":"Redmi Turbo 4 Pro 12+256","price":1999,"per1000":1192474.24},{"name":"一加Ace 6T 12+256","price":2599,"per1000":1153041.17}]},{"category":"monitor","label":"显示器","metric":{"name":"像素吞吐 = 宽×高×刷新率 (MP/s)","unit":"MP/s","higher_is_better":true},"price_basis":"中国大陆 全新 参考价/京东价（CNY），2026-11","caveats":["像素吞吐只反映'带宽型'性能，不含色域、亮度、HDR 分区、响应时间这些面板素质","OLED/MiniLED 的溢价主要买的是对比度与响应，不体现在本指标里，因此高端段性价比被低估"],"items":[{"name":"AOC 24B35H 24\" 1080p 100Hz IPS","price":499,"perf":207,"note":"","source":"https://detail.zol.com.cn/lcd/","norm":0.0,"per1000":414.83},{"name":"KTC H27T22S 27\" 2K 210Hz FastIPS","price":779,"perf":774,"note":"","source":"https://detail.zol.com.cn/lcd/","norm":31.8,"per1000":993.58},{"name":"华为 MateView SE 27\" 2K 75Hz","price":849,"perf":276,"note":"","source":"https://detail.zol.com.cn/lcd/","norm":3.9,"per1000":325.09},{"name":"AOC Q27G40E 27\" 2K 180Hz","price":1099,"perf":664,"note":"","source":"https://detail.zol.com.cn/lcd/","norm":25.6,"per1000":604.19},{"name":"AOC 27G2 27\" 1080p 144Hz","price":1299,"perf":299,"note":"","source":"https://detail.zol.com.cn/lcd/","norm":5.2,"per1000":230.18},{"name":"HKC SG27QC 27\" 2K 144Hz 曲面","price":1499,"perf":531,"note":"","source":"https://detail.zol.com.cn/lcd/","norm":18.2,"per1000":354.24},{"name":"AOC Q2790PQ 27\" 2K 60Hz IPS","price":1549,"perf":221,"note":"","source":"https://detail.zol.com.cn/lcd/","norm":0.8,"per1000":142.67},{"name":"AOC U2790PQU 27\" 4K 60Hz IPS","price":1999,"perf":498,"note":"","source":"https://detail.zol.com.cn/lcd/","norm":16.3,"per1000":249.12},{"name":"三星 U28E590D 28\" 4K 60Hz","price":2199,"perf":498,"note":"","source":"https://detail.zol.com.cn/lcd/","norm":16.3,"per1000":226.47},{"name":"三星 U32J590 32\" 4K 60Hz","price":2399,"perf":498,"note":"","source":"https://detail.zol.com.cn/lcd/","norm":16.3,"per1000":207.59},{"name":"红米 G Pro 27U 27\" 4K 160Hz MiniLED","price":2699,"perf":1327,"note":"","source":"https://detail.zol.com.cn/lcd/","norm":62.8,"per1000":491.66},{"name":"AOC AGON AG277QSD 27\" 2K 320Hz QD-OLED","price":3999,"perf":1180,"note":"","source":"https://detail.zol.com.cn/lcd/","norm":54.5,"per1000":295.07},{"name":"AOC AGP327UZD 32\" 4K 240Hz OLED","price":6499,"perf":1991,"note":"","source":"https://detail.zol.com.cn/lcd/","norm":100.0,"per1000":306.35},{"name":"LG 27G850A 27\" 4K 240Hz","price":6999,"perf":1991,"note":"","source":"https://detail.zol.com.cn/lcd/","norm":100.0,"per1000":284.47},{"name":"ROG PG27UCDM 27\" 4K 240Hz QD-OLED","price":7999,"perf":1991,"note":"","source":"https://detail.zol.com.cn/lcd/","norm":100.0,"per1000":248.91},{"name":"三星 S27FG902 27\" 4K 165Hz 裸眼3D","price":15999,"perf":1369,"note":"","source":"https://detail.zol.com.cn/lcd/","norm":65.1,"per1000":85.57}],"fit":{"b":0.663,"a":4.006,"r2":0.651,"n":16,"double":1.58},"knee":{"0.7":{"target":1456,"fit_price":7311,"real_price":6499,"real_model":"AOC AGP327UZD 32\" 4K 240Hz OLED"},"0.8":{"target":1634,"fit_price":8704,"real_price":6499,"real_model":"AOC AGP327UZD 32\" 4K 240Hz OLED"},"0.9":{"target":1813,"fit_price":10177,"real_price":6499,"real_model":"AOC AGP327UZD 32\" 4K 240Hz OLED"}},"outliers":[{"name":"KTC H27T22S 27\" 2K 210Hz FastIPS","price":779,"z":1.78},{"name":"AOC Q2790PQ 27\" 2K 60Hz IPS","price":1549,"z":-1.79}],"best_per_yuan":[{"name":"KTC H27T22S 27\" 2K 210Hz FastIPS","price":779,"per1000":993.58},{"name":"AOC Q27G40E 27\" 2K 180Hz","price":1099,"per1000":604.19},{"name":"红米 G Pro 27U 27\" 4K 160Hz MiniLED","price":2699,"per1000":491.66}]}]};
+const NS = "http://www.w3.org/2000/svg";
+const COLORS = {cpu:"#5eead4",gpu:"#f59e0b",ram:"#a78bfa",ssd:"#60a5fa",phone:"#f472b6",monitor:"#34d399",tablet:"#fbbf24",tws:"#22d3ee",watch:"#c084fc",camera:"#fb7185"};
+const fmt = n => n>=1e8 ? (n/1e8).toFixed(2)+"亿" : n>=1e4 ? (n/1e4).toFixed(n>=1e6?0:1)+"万" : Math.round(n).toLocaleString();
+const money = n => "¥"+Math.round(n).toLocaleString();
+const cats = DATA.categories;
+
+/* ---------- 头部统计 ---------- */
+(function(){
+  const total = cats.reduce((s,c)=>s+c.items.length,0);
+  document.getElementById("nsample").textContent = total+" 个型号 / "+cats.length+" 个品类";
+  const byB = [...cats].sort((a,b)=>a.fit.b-b.fit.b);
+  const steep = byB[0], flat = byB[byB.length-1];
+  const stats = [
+    {v:steep.fit.double.toFixed(2)+"<small>×</small>", k:steep.label+"：价格翻倍，性能只涨这么多"},
+    {v:cats.length+"<small>类</small>", k:"覆盖 PC 核心件 / 手机 / 外设"},
+    {v:total+"<small>款</small>", k:"2026-11 在售型号样本"},
+    {v:"b="+steep.fit.b.toFixed(2), k:steep.label+" 的边际递减指数（最小）"},
+  ];
+  document.getElementById("stats").innerHTML = stats.map(s=>
+    `<div class="stat"><div class="v">${s.v}</div><div class="k">${s.k}</div></div>`).join("");
+  document.getElementById("lede").innerHTML =
+    `把 CPU、显卡、内存、SSD、手机、显示器放在同一套「价格 vs 性能」坐标里，用幂律 <b>P = a·X<sup>b</sup></b> 拟合。`+
+    `<b>b &lt; 1</b> 就是边际收益递减：价格翻倍，性能涨不到一倍。最陡的是 ${steep.label}（b=${steep.fit.b.toFixed(2)}，`+
+    `价格翻倍仅 <b>${steep.fit.double.toFixed(2)}×</b>），最「线性」的是 ${flat.label}（b=${flat.fit.b.toFixed(2)}）。`;
+  document.getElementById("footNote").textContent =
+    `拟合优度 R²：` + cats.map(c=>`${c.label} ${c.fit.r2.toFixed(2)}`).join(" · ") + "。R² 偏低说明该品类被品牌/渠道溢价主导。";
+})();
+
+/* ---------- tooltip ---------- */
+const tip = document.getElementById("tip");
+function showTip(e, html){
+  tip.innerHTML = html; tip.style.opacity = 1;
+  const pad = 14, w = tip.offsetWidth, h = tip.offsetHeight;
+  let x = e.clientX + pad, y = e.clientY + pad;
+  if (x + w > innerWidth - 8) x = e.clientX - w - pad;
+  if (y + h > innerHeight - 8) y = e.clientY - h - pad;
+  tip.style.left = x+"px"; tip.style.top = y+"px";
+}
+function hideTip(){ tip.style.opacity = 0; }
+
+/* ---------- 主图 ---------- */
+let cur = 0, normMode = false, showFit = true;
+const main = document.getElementById("main");
+
+function scaleX(v, x0, x1){ return x0 + (Math.log10(v)-Math.log10(xMin))/(Math.log10(xMax)-Math.log10(xMin))*(x1-x0); }
+
+function drawMain(){
+  const c = cats[cur], items = c.items;
+  const W=900, H=460, L=62, R=26, T=22, B=52;
+  const x0=L, x1=W-R, y0=H-B, y1=T;
+  const prices = items.map(i=>i.price), perfs = items.map(i=>i.perf);
+  const xMin = Math.min(...prices)*0.82, xMax = Math.max(...prices)*1.22;
+  const pMax = Math.max(...perfs);
+  const yMax = normMode ? 100 : pMax*1.08;
+  const yMin = normMode ? 0 : 0;
+  const Y = v => y0 - (v-yMin)/(yMax-yMin)*(y0-y1);
+  const X = v => x0 + (Math.log10(v)-Math.log10(xMin))/(Math.log10(xMax)-Math.log10(xMin))*(x1-x0);
+  const col = COLORS[c.category] || "#5eead4";
+  let s = "";
+
+  // 网格 + y 轴
+  const yTicks = normMode ? [0,25,50,75,100] : niceTicks(0, yMax, 5);
+  yTicks.forEach(t=>{
+    s += `<line x1="${x0}" x2="${x1}" y1="${Y(t)}" y2="${Y(t)}" stroke="rgba(255,255,255,.07)"/>`;
+    s += `<text x="${x0-10}" y="${Y(t)+4}" text-anchor="end" fill="#5d6478" font-size="11" font-family="var(--mono)">${fmt(t)}</text>`;
+  });
+  // x 轴 log ticks
+  const xTicks = [];
+  for(let p=Math.floor(Math.log10(xMin)); p<=Math.ceil(Math.log10(xMax)); p++){
+    [1,2,5].forEach(m=>{ const v=m*Math.pow(10,p); if(v>=xMin&&v<=xMax) xTicks.push(v); });
+  }
+  xTicks.forEach(t=>{
+    s += `<line x1="${X(t)}" x2="${X(t)}" y1="${y0}" y2="${y0+5}" stroke="rgba(255,255,255,.25)"/>`;
+    s += `<text x="${X(t)}" y="${y0+20}" text-anchor="middle" fill="#5d6478" font-size="10.5" font-family="var(--mono)">${t>=10000? (t/10000)+"万":t}</text>`;
+  });
+  s += `<text x="${(x0+x1)/2}" y="${H-8}" text-anchor="middle" fill="#8b93a7" font-size="11.5">价格（元 · 对数刻度）</text>`;
+
+  // 甜点区 shading（低于 80% 价格）
+  const knee = c.knee["0.8"];
+  if(knee && knee.real_price){
+    s += `<rect x="${x0}" y="${y1}" width="${Math.max(0,X(knee.real_price)-x0)}" height="${y0-y1}" fill="${col}" opacity=".05"/>`;
+    s += `<line x1="${X(knee.real_price)}" x2="${X(knee.real_price)}" y1="${y1}" y2="${y0}" stroke="${col}" stroke-opacity=".5" stroke-dasharray="3 4"/>`;
+    s += `<text x="${X(knee.real_price)+6}" y="${y1+13}" fill="${col}" font-size="10.5" font-family="var(--mono)">80% 性能 @ ${money(knee.real_price)}</text>`;
+  }
+
+  // 拟合曲线
+  if(showFit){
+    let d = "", first = true;
+    for(let i=0;i<=80;i++){
+      const xv = Math.pow(10, Math.log10(xMin) + i/80*(Math.log10(xMax)-Math.log10(xMin)));
+      const pv = c.fit.a * Math.pow(xv, c.fit.b);
+      if(pv > yMax*1.1) continue;
+      d += (first?"M":"L") + X(xv).toFixed(1)+","+Y(pv).toFixed(1)+" "; first=false;
+    }
+    s += `<path d="${d}" fill="none" stroke="${col}" stroke-width="2" stroke-dasharray="7 5" opacity=".75"/>`;
+  }
+
+  // 点
+  items.slice().sort((a,b)=>b.perf-a.perf).forEach(it=>{
+    const yv = normMode ? it.norm : it.perf;
+    s += `<circle cx="${X(it.price)}" cy="${Y(yv)}" r="5" fill="${col}" fill-opacity=".85" stroke="#0a0c11" stroke-width="1.4"/>`;
+  });
+
+  // 交互层
+  items.forEach(it=>{
+    const yv = normMode ? it.norm : it.perf;
+    s += `<circle cx="${X(it.price)}" cy="${Y(yv)}" r="12" fill="transparent" data-name="${esc(it.name)}" data-price="${it.price}" data-perf="${it.perf}" data-norm="${it.norm}" class="pt" style="cursor:pointer"/>`;
+  });
+
+  main.innerHTML = s;
+  main.querySelectorAll(".pt").forEach(el=>{
+    el.addEventListener("mousemove", e=>{
+      const price = +el.dataset.price, perf = +el.dataset.perf;
+      showTip(e, `<b>${el.dataset.name}</b>
+        <div class="row"><span>价格</span><span>${money(price)}</span></div>
+        <div class="row"><span>${c.metric.name}</span><span>${fmt(perf)} ${c.metric.unit}</span></div>
+        <div class="row"><span>每元性能</span><span>${(perf/price*1000).toFixed(1)} / 千元</span></div>
+        <div class="row"><span>品类内分位</span><span>${el.dataset.norm} / 100</span></div>`);
+    });
+    el.addEventListener("mouseleave", hideTip);
+  });
+
+  document.getElementById("chartTitle").textContent = c.label + "：" + c.metric.name;
+  document.getElementById("chartSub").textContent =
+    `n=${c.fit.n} · b=${c.fit.b} · R²=${c.fit.r2} · 价格翻倍性能 ×${c.fit.double} · ` + c.price_basis;
+}
+
+function niceTicks(min,max,n){
+  const span=max-min, step=Math.pow(10,Math.floor(Math.log10(span/n)));
+  const err=span/n/step;
+  const mult = err>=7.5?10:err>=3.5?5:err>=1.5?2:1;
+  const s=step*mult, out=[];
+  for(let v=Math.ceil(min/s)*s; v<=max; v+=s) out.push(v);
+  return out;
+}
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;"); }
+
+/* ---------- 边际收益 ---------- */
+function drawMarg(){
+  const c=cats[cur], items=[...c.items].sort((a,b)=>a.price-b.price);
+  const base=items[0], col=COLORS[c.category];
+  const pts = items.filter(i=>i.price>base.price).map(i=>({
+    price:i.price, m:(i.perf-base.perf)/(i.price-base.price)*1000/base.perf*100, name:i.name
+  }));
+  const W=460,H=300,L=48,R=14,T=16,B=40,x0=L,x1=W-R,y0=H-B,y1=T;
+  const xmin=Math.min(...items.map(i=>i.price))*.9, xmax=Math.max(...items.map(i=>i.price))*1.05;
+  const ymax=Math.max(...pts.map(p=>p.m),1)*1.1;
+  const X=v=>x0+(v-xmin)/(xmax-xmin)*(x1-x0), Y=v=>y0-v/ymax*(y0-y1);
+  let s="";
+  [0,.25,.5,.75,1].forEach(f=>{
+    s+=`<line x1="${x0}" x2="${x1}" y1="${Y(ymax*f)}" y2="${Y(ymax*f)}" stroke="rgba(255,255,255,.06)"/>`;
+    s+=`<text x="${x0-8}" y="${Y(ymax*f)+4}" text-anchor="end" fill="#5d6478" font-size="10" font-family="var(--mono)">${(ymax*f).toFixed(1)}</text>`;
+  });
+  s+=`<path d="${pts.map((p,i)=>(i?"L":"M")+X(p.price)+","+Y(p.m)).join(" ")}" fill="none" stroke="${col}" stroke-width="2"/>`;
+  pts.forEach(p=>{ s+=`<circle cx="${X(p.price)}" cy="${Y(p.m)}" r="3.5" fill="${col}"/>`; });
+  s+=`<text x="${(x0+x1)/2}" y="${H-6}" text-anchor="middle" fill="#8b93a7" font-size="10.5">价格（元）</text>`;
+  document.getElementById("marg").innerHTML=s;
+  document.getElementById("mgTitle").textContent=c.label+"：边际收益衰减";
+}
+
+/* ---------- 弹性条形 ---------- */
+function drawBars(){
+  const W=460,H=300,L=48,R=60,T=14,B=34,x0=L,x1=W-R,y0=H-B,y1=T;
+  const sorted=[...cats].sort((a,b)=>b.fit.double-a.fit.double);
+  const max=Math.max(...sorted.map(c=>c.fit.double))*1.05;
+  const bh=(y0-y1)/sorted.length;
+  let s="";
+  s+=`<line x1="${x0}" x2="${x0}" y1="${y1}" y2="${y0}" stroke="rgba(255,255,255,.18)"/>`;
+  sorted.forEach((c,i)=>{
+    const w=(c.fit.double-1)/(max-1)*(x1-x0), y=y1+i*bh+bh*.18, h=bh*.64;
+    s+=`<rect x="${x0}" y="${y}" width="${Math.max(2,w)}" height="${h}" rx="3" fill="${COLORS[c.category]}" opacity=".75"/>`;
+    s+=`<text x="${x0-8}" y="${y+h*.7}" text-anchor="end" fill="#8b93a7" font-size="10.5">${c.label}</text>`;
+    s+=`<text x="${x0+Math.max(2,w)+7}" y="${y+h*.7}" fill="#e8eaf0" font-size="10.5" font-family="var(--mono)">${c.fit.double.toFixed(2)}×</text>`;
+  });
+  s+=`<text x="${x0}" y="${H-8}" fill="#8b93a7" font-size="10.5">价格翻倍时的性能倍数（1.0 = 完全不涨）</text>`;
+  document.getElementById("bars").innerHTML=s;
+}
+
+/* ---------- 跨品类 ---------- */
+function drawCross(){
+  const W=900,H=420,L=56,R=24,T=20,B=48,x0=L,x1=W-R,y0=H-B,y1=T;
+  const prices=cats.flatMap(c=>c.items.map(i=>i.price));
+  const xmin=Math.min(...prices)*.8, xmax=Math.max(...prices)*1.25;
+  const X=v=>x0+(Math.log10(v)-Math.log10(xmin))/(Math.log10(xmax)-Math.log10(xmin))*(x1-x0);
+  const Y=v=>y0-v/100*(y0-y1);
+  let s="";
+  [0,20,40,60,80,100].forEach(t=>{
+    s+=`<line x1="${x0}" x2="${x1}" y1="${Y(t)}" y2="${Y(t)}" stroke="rgba(255,255,255,${t===80?".16":".06"})" ${t===80?'stroke-dasharray="4 4"':""}/>`;
+    s+=`<text x="${x0-8}" y="${Y(t)+4}" text-anchor="end" fill="#5d6478" font-size="10.5" font-family="var(--mono)">${t}</text>`;
+  });
+  for(let p=2;p<=5;p++){
+    [1,2,5].forEach(m=>{ const v=m*Math.pow(10,p); if(v>=xmin&&v<=xmax){
+      s+=`<text x="${X(v)}" y="${y0+18}" text-anchor="middle" fill="#5d6478" font-size="10" font-family="var(--mono)">${v>=10000?(v/10000)+"万":v}</text>`; }});
+  }
+  cats.forEach(c=>{
+    const col=COLORS[c.category];
+    c.items.forEach(it=>{ s+=`<circle cx="${X(it.price)}" cy="${Y(it.norm)}" r="2.6" fill="${col}" opacity=".55"/>`; });
+    let d="",first=true;
+    for(let i=0;i<=60;i++){
+      const xv=Math.pow(10,Math.log10(xmin)+i/60*(Math.log10(xmax)-Math.log10(xmin)));
+      const pv=c.fit.a*Math.pow(xv,c.fit.b);
+      const pmin=Math.min(...c.items.map(x=>x.perf)), pmax=Math.max(...c.items.map(x=>x.perf));
+      const nv=(pv-pmin)/(pmax-pmin)*100;
+      if(nv<0||nv>115) { first=true; continue; }
+      d+=(first?"M":"L")+X(xv).toFixed(1)+","+Y(nv).toFixed(1)+" "; first=false;
+    }
+    s+=`<path d="${d}" fill="none" stroke="${col}" stroke-width="2.2" opacity=".95"/>`;
+  });
+  s+=`<text x="${(x0+x1)/2}" y="${H-8}" text-anchor="middle" fill="#8b93a7" font-size="11">价格（元 · 对数刻度） ｜ 纵轴：品类内归一化性能</text>`;
+  // 图例
+  let lx=x0+6, ly=y1+2;
+  cats.forEach((c,i)=>{
+    const y=y1+4+i*16;
+    s+=`<rect x="${x1-120}" y="${y-6}" width="8" height="8" rx="2" fill="${COLORS[c.category]}"/>`;
+    s+=`<text x="${x1-106}" y="${y+1}" fill="#8b93a7" font-size="10.5">${c.label}</text>`;
+  });
+  document.getElementById("cross").innerHTML=s;
+}
+
+/* ---------- 卡片 ---------- */
+function drawCards(){
+  document.getElementById("cards").innerHTML = cats.map(c=>{
+    const best=[...c.items].sort((a,b)=>b.perf/b.price-a.perf/a.price)[0];
+    const k=c.knee["0.8"];
+    return `<div class="card">
+      <h4><span style="display:flex;align-items:center;gap:7px"><i style="width:8px;height:8px;border-radius:2px;background:${COLORS[c.category]};display:inline-block"></i>${c.label}</span>
+      <span class="b">b=${c.fit.b}</span></h4>
+      <dl>
+        <dt>价格翻倍性能</dt><dd>×${c.fit.double}</dd>
+        <dt>80% 性能价</dt><dd>${k&&k.real_price?money(k.real_price):"—"}</dd>
+        <dt>最香型号</dt><dd style="font-family:inherit;font-size:11px">${best.name.slice(0,18)}</dd>
+        <dt>最香每元</dt><dd>${(best.perf/best.price*1000).toFixed(0)}</dd>
+        <dt>高端溢价起点</dt><dd>${money(c.items.reduce((m,i)=>Math.max(m,i.price),0)*0.75)}</dd>
+      </dl></div>`;
+  }).join("");
+}
+
+/* ---------- 表格 ---------- */
+let sortKey="price", sortDir=1;
+function drawTable(){
+  const head=document.getElementById("table").tHead, body=document.getElementById("table").tBodies[0];
+  head.innerHTML = `<tr><th data-k="name">型号</th><th data-k="cat">品类</th><th data-k="price" class="mono">价格</th>
+    <th data-k="perf" class="mono">性能</th><th data-k="per" class="mono">每元性能</th><th data-k="norm" class="mono">分位</th></tr>`;
+  const rows=[];
+  cats.forEach(c=>c.items.forEach(i=>rows.push({name:i.name,cat:c.label,price:i.price,perf:i.perf,
+    per:i.perf/i.price*1000,norm:i.norm,c:c,note:i.note})));
+  rows.sort((a,b)=>{
+    let x=a[sortKey],y=b[sortKey];
+    if(typeof x==="string") return x.localeCompare(y)*sortDir;
+    return (x-y)*sortDir;
+  });
+  body.innerHTML = rows.map(r=>`<tr>
+    <td title="${esc(r.note||"")}">${r.name}</td>
+    <td style="color:var(--mut);font-size:11.5px">${r.cat}</td>
+    <td class="mono">${money(r.price)}</td>
+    <td class="mono">${fmt(r.perf)} <span style="color:var(--dim);font-size:10px">${r.c.metric.unit}</span></td>
+    <td class="mono">${r.per.toFixed(r.per>100?0:1)}</td>
+    <td class="mono">${r.norm}</td></tr>`).join("");
+  head.querySelectorAll("th").forEach(th=>{
+    th.onclick=()=>{ const k=th.dataset.k; if(k===sortKey) sortDir*=-1; else {sortKey=k;sortDir=1;} drawTable(); };
+  });
+}
+
+/* ---------- tabs ---------- */
+const tabs=document.getElementById("tabs");
+tabs.innerHTML = cats.map((c,i)=>`<button class="tab" role="tab" aria-selected="${i===0}" data-i="${i}">${c.label}<span style="color:var(--dim);font-family:var(--mono);font-size:10.5px;margin-left:5px">${c.fit.n}</span></button>`).join("");
+tabs.addEventListener("click", e=>{
+  const b=e.target.closest(".tab"); if(!b) return;
+  cur=+b.dataset.i;
+  [...tabs.children].forEach((t,i)=>t.setAttribute("aria-selected", i===cur));
+  drawMain(); drawMarg();
+});
+document.getElementById("btnScale").onclick = e=>{
+  normMode=!normMode; e.currentTarget.setAttribute("aria-pressed",normMode);
+  e.currentTarget.textContent = normMode? "原始性能" : "归一化 0–100";
+  drawMain();
+};
+document.getElementById("btnFit").onclick = e=>{
+  showFit=!showFit; e.currentTarget.setAttribute("aria-pressed",showFit); drawMain();
+};
+
+drawMain(); drawMarg(); drawBars(); drawCross(); drawCards(); drawTable();
+addEventListener("resize", hideTip);
+</script>
+</body>
+</html>
